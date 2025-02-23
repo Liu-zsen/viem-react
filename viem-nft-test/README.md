@@ -3,7 +3,7 @@
 ## 1. 安装依赖
 
 ```bash
-cd viem-nft
+cd viem-nft-test 
 npm install 
 本地全局安装 npm install -g tsx
 ```
