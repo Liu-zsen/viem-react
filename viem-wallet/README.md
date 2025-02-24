@@ -1,3 +1,13 @@
+# viem-react
+
+## 1. 安装依赖
+
+```bash
+cd viem-wallet
+npm install 
+node wallet.js
+```
+
 ## 功能说明
 生成私钥：
 若 .env 文件中无私钥，则自动生成一个新的私钥（请妥善保存）。

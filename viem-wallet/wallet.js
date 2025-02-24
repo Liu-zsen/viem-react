@@ -3,6 +3,7 @@ import { http ,createPublicClient ,encodeFunctionData , parseUnits ,createWallet
 import { sepolia } from 'viem/chains';
 import dotenv from 'dotenv';
 import { Buffer } from 'buffer';
+import { ABI } from './ERC20ABI.js';
 // 编写一个脚本(可以基于 Viem.js 、Ethers.js 或其他的库来实现)来模拟一个命令行
 // 钱包,钱包包含的功能有:
 // • 1. 生成私钥、查询余额(可人工转入金额)
@@ -11,6 +12,7 @@ import { Buffer } from 'buffer';
 // • 4. 发送交易到 Sepolia 网络。
 
 dotenv.config();
+
 /**
  * 生成一个随机私钥
  */
@@ -30,11 +32,19 @@ console.log('Account address:',userAddress);
 const publicClient = createPublicClient({ chain: sepolia, transport: http() });
 const walletClient = createWalletClient({ privateKey, chain: sepolia, transport: http() });
 
-// 查询余额
+// 查询测试网eth余额
 const balanceOf = await publicClient.getBalance({
     address: userAddress
 })
+// 查询自己发行的 ERC20 Token余额
+const balanceOf_MTK = await publicClient.readContract({
+    address: '0x3a4765fACd26809060432Ad8904297c5b6A6E8b6',
+    abi: ABI,
+    functionName: 'balanceOf',
+    args: [userAddress]
+})
 console.log(`账户余额: ETH` ,balanceOf);
+console.log(`账户余额: MTK` ,balanceOf_MTK);
 
 // 查询nonce
 const nonce = await publicClient.getTransactionCount({
@@ -55,22 +65,11 @@ async function sendTransactionExample(recipient, amount, tokenAddress) {
         const decimals = 18; // 代币精度（不同 ERC20 可能不同）
         const amountInWei = parseUnits(amount, decimals);
 
-        // ERC20 `transfer` 方法的 ABI 编码
+        // ERC20 `tokensReceived` 方法的 ABI 编码
         const data = encodeFunctionData({
-            abi: [
-                {
-                    "constant": false,
-                    "inputs": [
-                        { "name": "recipient", "type": "address" },
-                        { "name": "amount", "type": "uint256" }
-                    ],
-                    "name": "transfer",
-                    "outputs": [{ "name": "", "type": "bool" }],
-                    "type": "function"
-                }
-            ],
-            functionName: "transfer",
-            args: [recipient, amountInWei],
+            abi: ABI,
+            functionName: 'transfer',
+            args: [recipient, amountInWei]
         });
 
         // 计算交易参数
@@ -79,24 +78,26 @@ async function sendTransactionExample(recipient, amount, tokenAddress) {
         ]);
 
         const txPrarams = {
+            account: privateKey,
             to: tokenAddress,
             data,
             value: 0n,
             nonce,
-            gasPrice,
 
             // EIP-1559 交易
             maxFeePerGas: gasPrice * 2n,
             maxPriorityFeePerGas: gasPrice / 2n,
 
-            gas: 100000n, // 预估 Gas
+            gas: 50000n, // 预估 Gas
         };
         
         console.log("正在签名交易...");
         const signedTx = await walletClient.signTransaction(txPrarams);
 
         console.log("正在发送交易...");
-        const txHash = await walletClient.sendRawTransaction(signedTx);
+        const txHash = await walletClient.sendRawTransaction({
+            serializedTransaction: signedTx,
+        });
         console.log("交易哈希:", txHash);
     } catch (error) {
         console.log(error,'--error');
@@ -107,5 +108,5 @@ async function sendTransactionExample(recipient, amount, tokenAddress) {
 
 // 运行示例
 (async () => {
-    await sendTransactionExample("0x314500582Cf2c459A6E31547397eB75A816D2a42", "0.001", "0x10d8278A429bb03e9F2C05F72EdF9d6F50b06888");
+    await sendTransactionExample("0x314500582Cf2c459A6E31547397eB75A816D2a42", "1", "0x3a4765fACd26809060432Ad8904297c5b6A6E8b6");
 })();
