@@ -36,6 +36,7 @@ export function App() {
   const [transactionHash, setTransactionHash] = useState<`0x${string}` | undefined>(undefined);
   const [signedMsg, setSignedMsg] = useState('');
   const [balance, setBalance] = useState('');
+  const [bankBalance, setBankBalance] = useState('');
 
   const receiveHash = (hash: `0x${string}`) => {
     setTransactionHash(hash); // Update the state with the transaction hash
@@ -49,6 +50,10 @@ export function App() {
     setBalance(balance)
   }
 
+  const receivebankBalance = (bankBalance: string) => {
+    setBankBalance(bankBalance)
+  }
+
 
   return (
     <div className={"pages"}>
@@ -57,7 +62,7 @@ export function App() {
       <WagmiProvider config={wagmiAdapter.wagmiConfig}>
         <QueryClientProvider client={queryClient}>
             <appkit-button />
-            <ActionButtonList sendHash={receiveHash} sendSignMsg={receiveSignedMsg} sendBalance={receivebalance}/>
+            <ActionButtonList sendHash={receiveHash} sendSignMsg={receiveSignedMsg} sendBalance={receivebalance} sendBankBalance={receivebankBalance}/>
             <SmartContractActionButtonList />
             <div className="advice">
               <p>
@@ -65,7 +70,7 @@ export function App() {
                 Go to <a href="https://cloud.reown.com" target="_blank" className="link-button" rel="Reown Cloud">Reown Cloud</a> to get your own.
               </p>
             </div>
-            <InfoList hash={transactionHash} signedMsg={signedMsg} balance={balance}/>
+            <InfoList hash={transactionHash} signedMsg={signedMsg} balance={balance} bankBalance={bankBalance}/>
         </QueryClientProvider>
       </WagmiProvider>
     </div>

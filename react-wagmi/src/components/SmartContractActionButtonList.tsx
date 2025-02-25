@@ -5,6 +5,7 @@
 import { useAppKitNetwork, useAppKitAccount  } from '@reown/appkit/react'
 import { useReadContract, useWriteContract } from 'wagmi'
 import { useEffect } from 'react'
+// import ABI from './tokenBank';
 const storageABI = [
 	{
 		"inputs": [],
@@ -35,11 +36,19 @@ const storageABI = [
 ]
 
 const storageSC = "0xEe6D291CC60d7CeD6627fA4cd8506912245c8cA4" 
+// bank 合约地址
+// const BNAK_ADDRESS = "0x52b0c332eD45c3Ecd5F10A6947944eA2d7E4c0ab" 
 
 export const SmartContractActionButtonList = () => {
     const { isConnected } = useAppKitAccount() // AppKit hook to get the address and check if the user is connected
     const { chainId } = useAppKitNetwork()
     const { writeContract, isSuccess } = useWriteContract()
+
+    // 查询自己发行的 Bank Token余额
+    // const balanceOfMTK = useBalance({
+    //   address: BNAK_ADDRESS
+    // }); // Wagmi hook t
+
     const readContract = useReadContract({
       address: storageSC,
       abi: storageABI,
@@ -70,6 +79,25 @@ export const SmartContractActionButtonList = () => {
           args: [123n],
         })
     }
+    //  存入 Token
+    // const handleDepositBankContract =  () => {
+    //     console.log("Write Sepolia Bank Contract")
+    //     writeContract({
+    //       address: BNAK_ADDRESS,
+    //       abi: ABI,
+    //       functionName: 'deposit',
+    //       args: [1n],
+    //     })
+    // }
+
+    // const handleGetBankBalanceOf =  async () => {
+      
+    //   console.log("Read Sepolia bank:",balanceOfMTK);
+    //   const { data } = await balanceOfMTK.refetch();
+    //   console.log("balanceOfMTK: ", data)
+    // }
+
+
 
 
   return (
@@ -77,6 +105,8 @@ export const SmartContractActionButtonList = () => {
     <div >
         <button onClick={handleReadSmartContract}>Read Sepolia Smart Contract</button>
         <button onClick={handleWriteSmartContract}>Write Sepolia Smart Contract</button>  
+        {/* <button onClick={handleDepositBankContract}>部署bank合约</button>  
+        <button onClick={handleGetBankBalanceOf}>查询自己发行的 Bank Token余额</button>   */}
     </div>
     )
   )
