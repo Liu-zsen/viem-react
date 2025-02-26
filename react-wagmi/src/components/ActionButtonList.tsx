@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDisconnect, useAppKit, useAppKitNetwork, useAppKitAccount  } from '@reown/appkit/react'
-import { formatEther, parseGwei, type Address } from 'viem'
+import { formatEther, parseGwei, type Address} from 'viem'
 import { useEstimateGas, useSendTransaction, useSignMessage, useBalance ,useReadContract } from 'wagmi'
 import { networks } from '../config'
 import bankABI from './tokenBank'
@@ -36,12 +36,15 @@ export const ActionButtonList = ({ sendHash, sendSignMsg, sendBalance,sendBankBa
       address: address as Address
     }); // Wagmi hook to get the balance
 
-    const { data: BankData } = useReadContract({
+    const BankData = useReadContract({
       address: BNAK_ADDRESS, // Bank 合约地址
       abi: bankABI, // 合约的 ABI
-      functionName: 'getBalance', // 查询余额的函数名，通常是 balanceOf
-      args: [address], // 参数：用户的地址
+      functionName: 'getBalance', // 查询余额的函数名，
+      args: ['0x10d8278A429bb03e9F2C05F72EdF9d6F50b06888'], // 参数：用户的地址
       chainId: sepolia.id,
+      query: {
+        enabled: false, // disable the query in onload
+      }
     });
 
     // 查询自己发行的 Bank Token余额
@@ -71,7 +74,7 @@ export const ActionButtonList = ({ sendHash, sendSignMsg, sendBalance,sendBankBa
 
     // function to sing a msg 
     const handleSignMsg = async () => {
-      const msg = "Hello Reown AppKit!" // message to sign
+      const msg = "Welcome To OpenBank" // message to sign
       const sig = await signMessageAsync({ message: msg, account: address as Address }); 
       sendSignMsg(sig);
     }
@@ -91,15 +94,13 @@ export const ActionButtonList = ({ sendHash, sendSignMsg, sendBalance,sendBankBa
       sendBankBalance(formatEther(Balance) + " " + balance?.data?.symbol.toString())
     }
 
-
     // 获取用户在bank合约的余额
     const handleGetUserBankBalance = async () =>{
-    console.log(BankData,'BankData??',address);
-    
-      const balance = BankData ? BankData.toString() : '0'; // 根据需要格式化
-      console.log(balance,'----balance');
+      
+      const balanceData = await BankData.refetch()
+      console.log(balanceData,'BankData??',address);
+      const balance = balanceData.data ? balanceData.data?.toString() : '0'; // 根据需要格式化
       setUserBalanceOf(`${balance}`)
-      // return <div>用户余额: {balance}</div>;
     }
 
     const handleDisconnect = async () => {
