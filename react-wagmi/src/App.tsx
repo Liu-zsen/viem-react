@@ -8,8 +8,10 @@ import { ActionButtonList } from './components/ActionButtonList'
 import { SmartContractActionButtonList } from './components/SmartContractActionButtonList'
 import { InfoList } from './components/InfoList'
 import { projectId, metadata, networks, wagmiAdapter } from './config'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 
 import "./App.css"
+import Permit from './pages/Permit'
 
 const queryClient = new QueryClient()
 
@@ -56,24 +58,40 @@ export function App() {
 
 
   return (
-    <div className={"pages"}>
-      <img src="/reown.svg" alt="Reown" style={{ width: '150px', height: '150px' }} />
-      <h1>AppKit Wagmi React dApp Example</h1>
-      <WagmiProvider config={wagmiAdapter.wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
-            <appkit-button />
-            <ActionButtonList sendHash={receiveHash} sendSignMsg={receiveSignedMsg} sendBalance={receivebalance} sendBankBalance={receivebankBalance}/>
-            <SmartContractActionButtonList />
-            <div className="advice">
-              <p>
-                This projectId only works on localhost. <br/>
-                Go to <a href="https://cloud.reown.com" target="_blank" className="link-button" rel="Reown Cloud">Reown Cloud</a> to get your own.
-              </p>
-            </div>
-            <InfoList hash={transactionHash} signedMsg={signedMsg} balance={balance} bankBalance={bankBalance}/>
-        </QueryClientProvider>
-      </WagmiProvider>
-    </div>
+    <BrowserRouter>
+      <div className={"pages"}>
+        {/* <img src="/reown.svg" alt="Reown" style={{ width: '150px', height: '150px' }} /> */}
+        <h1>AppKit Wagmi React dApp Example</h1>
+        
+        {/* 添加导航链接 */}
+        <nav>
+          <Link to="/" className="link-button">Home</Link>
+          <Link to="/permit" className="link-button">Permit</Link>
+        </nav>
+
+        <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+          <QueryClientProvider client={queryClient}>
+            <Routes>
+              <Route path="/" element={
+                <>
+                  <appkit-button />
+                  <ActionButtonList sendHash={receiveHash} sendSignMsg={receiveSignedMsg} sendBalance={receivebalance} sendBankBalance={receivebankBalance}/>
+                  <SmartContractActionButtonList />
+                  <div className="advice">
+                    <p>
+                      This projectId only works on localhost. <br/>
+                      Go to <a href="https://cloud.reown.com" target="_blank" className="link-button" rel="Reown Cloud">Reown Cloud</a> to get your own.
+                    </p>
+                  </div>
+                  <InfoList hash={transactionHash} signedMsg={signedMsg} balance={balance} bankBalance={bankBalance}/>
+                </>
+              } />
+              <Route path="/permit" element={<Permit />} />
+            </Routes>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </div>
+    </BrowserRouter>
   )
 }
 

@@ -97,17 +97,20 @@ pre {
   border-radius: 5px;
 }
 
-.link-button:hover {
-  background-color: #333;  /* Darken the background on hover */
-}
-
-.link-button:hover {
-  background-color: white;  /* Change background to white on hover */
-  color: black;  /* Change text color to black on hover */
-}
-
 .advice {
   text-align: 'center';
    margin-bottom: 10px;
    line-height: 25px;
+}
+nav {
+  margin: 20px 0;
+}
+
+nav .link-button {
+  margin: 0 10px;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: white;
+  border: 1px solid #000;
+  border-radius: 4px;
 }

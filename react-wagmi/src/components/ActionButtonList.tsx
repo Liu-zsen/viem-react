@@ -40,11 +40,21 @@ export const ActionButtonList = ({ sendHash, sendSignMsg, sendBalance,sendBankBa
       address: BNAK_ADDRESS, // Bank 合约地址
       abi: bankABI, // 合约的 ABI
       functionName: 'getBalance', // 查询余额的函数名，
-      args: ['0x10d8278A429bb03e9F2C05F72EdF9d6F50b06888'], // 参数：用户的地址
+      args: [address], // 参数：用户的地址
       chainId: sepolia.id,
       query: {
         enabled: false, // disable the query in onload
       }
+    });// 读取 TokenBank 中的余额
+    const { data: bank_balance, isLoading, isError, error } = useReadContract({
+      address: BNAK_ADDRESS,
+      abi: bankABI,
+      functionName: 'getBalance',
+      args: [address],
+      chainId: sepolia.id,
+      query: {
+        enabled: !!address, // 仅在 address 存在时查询
+      },
     });
 
     // 查询自己发行的 Bank Token余额
@@ -89,7 +99,6 @@ export const ActionButtonList = ({ sendHash, sendSignMsg, sendBalance,sendBankBa
     // 获取bank合约总余额
     const handleGetBankBalance = async () => {
       const balance = await balanceOfMTK.refetch()
-      console.log(balance,'balancebalance') 
       const Balance = BigInt(`${balance?.data?.value}`);
       sendBankBalance(formatEther(Balance) + " " + balance?.data?.symbol.toString())
     }
@@ -124,6 +133,16 @@ export const ActionButtonList = ({ sendHash, sendSignMsg, sendBalance,sendBankBa
         <button onClick={handleGetBankBalance}> 获取合约Bank 总余额</button>  
         <button onClick={handleGetUserBankBalance}> 
         获取 当前用户在Bank合约存的余额: {userBalanceOf}
+        {/* 显示余额 */}
+      {isConnected && (
+        <div>
+          {isLoading && <p>Loading balance...</p>}
+          {isError && <p>Error: {error?.message}</p>}
+          {bank_balance !== undefined && bank_balance !== null &&(
+            <p>Your Balance: {bank_balance.toString()} tokens</p>
+          )}
+        </div>
+      )}
       </button>  
         
     </div>
