@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAccount, useConnect, useSignTypedData, useReadContract, useWriteContract } from 'wagmi';
+import { useAccount, useSignTypedData, useReadContract, useWriteContract } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 import { formatEther, parseUnits } from 'viem';
 import tokenBankABI from './tokenBankABI.json';
@@ -13,7 +13,6 @@ const TOKEN_ADDRESS = '0xa39812b7e716e8B6CbbE018954A0A88C780360fa';
 function Permit() {
   const { address, isConnected } = useAccount();
   // const { connect, connectors } = useConnect();
-  // const { writeContract } = useWriteContract();
   const { writeContract, isSuccess, isError, error } = useWriteContract()
   // const { signTypedData, data: signature } = useSignTypedData();
   const { signTypedData } = useSignTypedData();
