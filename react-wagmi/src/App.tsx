@@ -12,6 +12,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 
 import "./App.css"
 import Permit from './pages/Permit'
+import Permit2 from './pages/permit2/depositWithPermit2'
 
 const queryClient = new QueryClient()
 
@@ -67,6 +68,7 @@ export function App() {
         <nav>
           <Link to="/" className="link-button">Home</Link>
           <Link to="/permit" className="link-button">Permit</Link>
+          <Link to="/permit2" className="link-button">Permit2</Link>
         </nav>
 
         <WagmiProvider config={wagmiAdapter.wagmiConfig}>
@@ -87,6 +89,7 @@ export function App() {
                 </>
               } />
               <Route path="/permit" element={<Permit />} />
+              <Route path="/permit2" element={<Permit2 />} />
             </Routes>
           </QueryClientProvider>
         </WagmiProvider>
